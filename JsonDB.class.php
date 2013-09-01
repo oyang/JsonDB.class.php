@@ -69,7 +69,7 @@ class JsonTable {
             }
         }
 
-		return $results;
+		return array_values($results);
 	}
 	
 	public function select($key, $val = 0) {
@@ -89,7 +89,7 @@ class JsonTable {
 				}
 			}
 		}
-		return $result;
+		return array_values($result);
 	}
 	
 	public function updateAll($data = array()) {
