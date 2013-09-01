@@ -62,7 +62,14 @@ class JsonTable {
 	}
 	
 	public function selectAll() {
-		return $this->fileData;
+        $results = $this->fileData;
+        foreach($results as $index => $record) {
+            if (isset($record["deleted"]) && $record["deleted"] == 1) {
+                unset($results[$index]);
+            }
+        }
+
+		return $results;
 	}
 	
 	public function select($key, $val = 0) {
@@ -73,7 +80,11 @@ class JsonTable {
 			foreach($data as $_key => $_val) {
 				if (isset($data[$_key][$key])) {
 					if ($data[$_key][$key] == $val) {
-						$result[] = $data[$_key];
+                        if (isset($_val["deleted"]) && $_val["deleted"] == 1) {
+                            continue;
+                        } else {
+                            $result[] = $data[$_key];
+                        }
 					}
 				}
 			}
@@ -116,7 +127,7 @@ class JsonTable {
 		return true;
 	}
 	
-	public function delete($key, $val = 0) {
+	public function delete($key, $val = 0, $softdelete = true) {
 		$result = 0;
 		if (is_array($key)) $result = $this->delete($key[1], $key[2]);
 		else {
@@ -124,7 +135,11 @@ class JsonTable {
 			foreach($data as $_key => $_val) {
 				if (isset($data[$_key][$key])) {
 					if ($data[$_key][$key] == $val) {
-						unset($data[$_key]);
+                        if ($softdelete) {
+                            $data[$_key]["deleted"] = 1;
+                        } else {
+                            unset($data[$_key]);
+                        }
 						$result++;
 					}
 				}
